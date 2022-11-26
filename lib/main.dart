@@ -30,7 +30,13 @@ class MyApp extends StatelessWidget {
         title: 'Flutter Demo',
         theme: ThemeData(
           fontFamily: 'Lato',
-          colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.purple).copyWith(secondary: Colors.deepOrange),
+          colorScheme: ColorScheme.fromSwatch(
+            primarySwatch: Colors.purple,
+            accentColor: Colors.deepOrange,
+          ).copyWith(
+            secondary: Colors.deepOrange,
+          ),
+          canvasColor: Color.fromARGB(255, 253, 236, 255),
         ),
         home: const ProductsOverviewPages(),
         debugShowCheckedModeBanner: false,
