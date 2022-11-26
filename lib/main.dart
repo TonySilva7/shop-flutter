@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
           fontFamily: 'Lato',
           colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.purple).copyWith(secondary: Colors.deepOrange),
         ),
-        home: ProductsOverviewPages(),
+        home: const ProductsOverviewPages(),
         debugShowCheckedModeBanner: false,
         routes: {
           AppRoutes.productDetail: (context) => const ProductDetailPage(),
