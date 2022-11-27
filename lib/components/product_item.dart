@@ -30,22 +30,24 @@ class ProductItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
         child: GridTile(
           footer: GridTileBar(
-            backgroundColor: Color.fromRGBO(226, 226, 226, .9),
+            backgroundColor: Color.fromRGBO(22, 22, 39, .8),
             title: Text(
               product.name,
               textAlign: TextAlign.center,
               style: const TextStyle(
-                color: Colors.black87,
+                color: Colors.white,
               ),
             ),
             leading: Consumer<Product>(
               builder: (ctx, product, _) => IconButton(
+                iconSize: 20,
                 color: Theme.of(context).colorScheme.secondary,
                 icon: Icon(product.isFavorite ? Icons.favorite : Icons.favorite_border),
                 onPressed: () => product.toggleFavorite(),
               ),
             ),
             trailing: IconButton(
+              iconSize: 20,
               color: Theme.of(context).colorScheme.secondary,
               icon: const Icon(Icons.shopping_cart),
               onPressed: () => cart.addItem(product),
