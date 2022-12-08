@@ -21,6 +21,25 @@ class MyCartItem extends StatelessWidget {
         child: Icon(Icons.delete, color: Colors.white, size: 40),
       ),
       onDismissed: (direction) => Provider.of<Cart>(context, listen: false).removeItem(cartItem.productId),
+      confirmDismiss: (direction) {
+        return showDialog<bool>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('Tem certeza?'),
+            content: const Text('Quer remover o item do carrinho?'),
+            actions: [
+              TextButton(
+                child: const Text('Não'),
+                onPressed: () => Navigator.of(ctx).pop(false),
+              ),
+              TextButton(
+                child: const Text('Sim'),
+                onPressed: () => Navigator.of(ctx).pop(true),
+              ),
+            ],
+          ),
+        );
+      },
       child: Card(
         margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 4),
         child: ListTile(
