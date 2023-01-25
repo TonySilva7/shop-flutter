@@ -44,6 +44,9 @@ class _ProductFormPageState extends State<ProductFormPage> {
   }
 
   void submitForm() {
+    final isValid = _formKey.currentState?.validate() ?? false;
+    if (!isValid) return;
+
     _formKey.currentState?.save();
 
     final newProduct = Product(
@@ -78,6 +81,12 @@ class _ProductFormPageState extends State<ProductFormPage> {
                 textInputAction: TextInputAction.next,
                 onFieldSubmitted: (_) => FocusScope.of(context).requestFocus(_priceFocus),
                 onSaved: (value) => _formData['name'] = value ?? '',
+                validator: (value) {
+                  final String name = value ?? '';
+                  if (name.trim().isEmpty) return 'Informe um nome válido';
+                  if (name.trim().length < 3) return 'Informe um nome com mais de 3 caracteres';
+                  return null;
+                },
               ),
               TextFormField(
                 decoration: const InputDecoration(labelText: 'Preço'),
