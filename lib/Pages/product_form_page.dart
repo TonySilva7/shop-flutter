@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:shop/models/product.dart';
 
 class ProductFormPage extends StatefulWidget {
   const ProductFormPage({super.key});
@@ -14,6 +17,10 @@ class _ProductFormPageState extends State<ProductFormPage> {
   final _imageUrlFocus = FocusNode();
   // acessa o valor do input
   final _imageUrlController = TextEditingController();
+  // acessa o estado do form
+  final _formKey = GlobalKey<FormState>();
+  // armazena o estado do form
+  final Map<String, Object> _formData = {};
 
   @override
   void initState() {
@@ -36,21 +43,41 @@ class _ProductFormPageState extends State<ProductFormPage> {
     }
   }
 
+  void submitForm() {
+    _formKey.currentState?.save();
+
+    final newProduct = Product(
+      id: Random().nextDouble().toString(),
+      name: _formData['name'].toString(),
+      price: _formData['price'] as double,
+      description: _formData['description'].toString(),
+      imageUrl: _formData['imageUrl'].toString(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Formulário de Produto'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.save),
+            onPressed: submitForm,
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(15),
         child: Form(
+          key: _formKey,
           child: ListView(
             children: [
               TextFormField(
                 decoration: const InputDecoration(labelText: 'Nome'),
                 textInputAction: TextInputAction.next,
                 onFieldSubmitted: (_) => FocusScope.of(context).requestFocus(_priceFocus),
+                onSaved: (value) => _formData['name'] = value ?? '',
               ),
               TextFormField(
                 decoration: const InputDecoration(labelText: 'Preço'),
@@ -59,12 +86,14 @@ class _ProductFormPageState extends State<ProductFormPage> {
                 keyboardType: TextInputType.numberWithOptions(decimal: true),
                 focusNode: _priceFocus,
                 onFieldSubmitted: (_) => FocusScope.of(context).requestFocus(_descriptionFocus),
+                onSaved: (value) => _formData['price'] = double.parse(value ?? '0'),
               ),
               TextFormField(
                 decoration: const InputDecoration(labelText: 'Descrição'),
                 keyboardType: TextInputType.multiline,
                 focusNode: _descriptionFocus,
                 maxLines: 3,
+                onSaved: (value) => _formData['description'] = value ?? '',
               ),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -76,6 +105,8 @@ class _ProductFormPageState extends State<ProductFormPage> {
                       focusNode: _imageUrlFocus,
                       keyboardType: TextInputType.url,
                       controller: _imageUrlController,
+                      onFieldSubmitted: (_) => submitForm(),
+                      onSaved: (value) => _formData['imageUrl'] = value ?? '',
                     ),
                   ),
                   Container(
@@ -84,20 +115,15 @@ class _ProductFormPageState extends State<ProductFormPage> {
                     margin: const EdgeInsets.only(top: 8, left: 10),
                     decoration: BoxDecoration(
                       border: Border.all(color: Theme.of(context).colorScheme.primary, width: 1),
-                      borderRadius: BorderRadius.circular(100),
+                      // borderRadius: BorderRadius.circular(100),
                     ),
                     alignment: Alignment.center,
-                    child: ClipRRect(
-                      borderRadius: const BorderRadius.all(
-                        Radius.circular(100),
-                      ),
-                      child: _imageUrlController.text.isEmpty
-                          ? Text('Imagem')
-                          : FittedBox(
-                              fit: BoxFit.cover,
-                              child: Image.network(_imageUrlController.text),
-                            ),
-                    ),
+                    child: _imageUrlController.text.isEmpty
+                        ? Text('Imagem')
+                        : FittedBox(
+                            fit: BoxFit.cover,
+                            child: Image.network(_imageUrlController.text),
+                          ),
                   ),
                 ],
               ),
