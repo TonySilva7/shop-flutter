@@ -1,29 +1,14 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:shop/data/dummy_data.dart';
 import 'package:shop/models/product.dart';
 
 class ProductList with ChangeNotifier {
   final List<Product> _items = dummyProducts;
-  // bool _showFavoriteOnly = false;
-
-  // List<Product> get items {
-  //   if (_showFavoriteOnly) {
-  //     return _items.where((product) => product.isFavorite).toList();
-  //   }
-  //   return [..._items];
-  // }
-
-  // void showFavoriteOnly() {
-  //   _showFavoriteOnly = true;
-  //   notifyListeners();
-  // }
-
-  // void showAll() {
-  //   _showFavoriteOnly = false;
-  //   notifyListeners();
-  // }
+  final _baseUrl = 'https://shop-flutter-4802f-default-rtdb.firebaseio.com';
 
   List<Product> get items => [..._items];
   List<Product> get favoriteItems => _items.where((product) => product.isFavorite).toList();
@@ -49,6 +34,15 @@ class ProductList with ChangeNotifier {
   }
 
   void addProduct(Product product) {
+    http.post(Uri.parse('$_baseUrl/products.json'),
+        body: jsonEncode({
+          'name': product.name,
+          'price': product.price,
+          'description': product.description,
+          'imageUrl': product.imageUrl,
+          'isFavorite': product.isFavorite,
+        }));
+
     _items.add(product);
     notifyListeners();
   }
