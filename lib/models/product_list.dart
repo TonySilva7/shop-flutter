@@ -3,17 +3,38 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:shop/data/dummy_data.dart';
 import 'package:shop/models/product.dart';
 
 class ProductList with ChangeNotifier {
-  final List<Product> _items = dummyProducts;
+  final List<Product> _items = [];
   final _baseUrl = 'https://shop-flutter-4802f-default-rtdb.firebaseio.com';
 
   List<Product> get items => [..._items];
   List<Product> get favoriteItems => _items.where((product) => product.isFavorite).toList();
 
   int get itemsCount => _items.length;
+
+  Future<void> loadProducts() async {
+    final response = await http.get(Uri.parse('$_baseUrl/products.json'));
+    Map<String, dynamic> data = jsonDecode(response.body);
+    _items.clear();
+
+    if (data.isNotEmpty) {
+      data.forEach((productId, productData) {
+        _items.add(
+          Product(
+            id: productId,
+            name: productData['name'],
+            description: productData['description'],
+            price: productData['price'],
+            imageUrl: productData['imageUrl'],
+            isFavorite: productData['isFavorite'],
+          ),
+        );
+      });
+      notifyListeners();
+    }
+  }
 
   Future<void> saveProduct(Map<String, Object> formData) {
     bool hasId = formData['id'] != null;
@@ -63,13 +84,25 @@ class ProductList with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateProduct(Product product) {
+  Future<void> updateProduct(Product product) async {
     final index = _items.indexWhere((element) => element.id == product.id);
+
     if (index >= 0) {
+      await http.patch(
+        Uri.parse('$_baseUrl/products/${product.id}.json'),
+        body: jsonEncode(
+          {
+            'name': product.name,
+            'description': product.description,
+            'price': product.price,
+            'imageUrl': product.imageUrl,
+          },
+        ),
+      );
+
       _items[index] = product;
       notifyListeners();
     }
-    return Future.value();
   }
 
   void removeProduct(Product product) {

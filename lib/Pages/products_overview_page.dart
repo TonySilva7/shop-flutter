@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:shop/components/app_drawer.dart';
 import 'package:shop/components/product_grid.dart';
 import 'package:shop/models/cart.dart';
+import 'package:shop/models/product_list.dart';
 
 enum FilterOptions {
   favorites,
@@ -18,6 +19,21 @@ class ProductsOverviewPages extends StatefulWidget {
 
 class _ProductsOverviewPagesState extends State<ProductsOverviewPages> {
   bool _showFavoriteOnly = false;
+  bool isLoading = true;
+
+  Future<void> handleRefresh() async {
+    await Provider.of<ProductList>(context, listen: false).loadProducts();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    handleRefresh().then((value) {
+      setState(() {
+        isLoading = false;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +75,13 @@ class _ProductsOverviewPagesState extends State<ProductsOverviewPages> {
           )
         ],
       ),
-      body: ProductGrid(showFavoriteOnly: _showFavoriteOnly),
+      body: RefreshIndicator(
+          onRefresh: () async => await handleRefresh(),
+          child: isLoading
+              ? Center(
+                  child: CircularProgressIndicator(),
+                )
+              : ProductGrid(showFavoriteOnly: _showFavoriteOnly)),
       drawer: AppDrawer(),
     );
   }
