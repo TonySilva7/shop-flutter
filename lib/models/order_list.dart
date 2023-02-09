@@ -53,4 +53,35 @@ class OrderList with ChangeNotifier {
 
     notifyListeners();
   }
+
+  Future<void> loadOrders() async {
+    _items.clear();
+
+    final response = await get(Uri.parse('${Constants.ORDER_BASE_URL}.json'));
+    Map<String, dynamic> data = jsonDecode(response.body);
+
+    if (data.isNotEmpty) {
+      data.forEach((orderId, orderData) {
+        _items.add(
+          Order(
+            id: orderId,
+            total: orderData['total'],
+            date: DateTime.parse(orderData['date']),
+            products: (orderData['products'] as List<dynamic>)
+                .map(
+                  (item) => CartItem(
+                    id: item['id'],
+                    productId: item['productId'],
+                    name: item['name'],
+                    quantity: item['quantity'],
+                    price: item['price'],
+                  ),
+                )
+                .toList(),
+          ),
+        );
+      });
+      notifyListeners();
+    }
+  }
 }
