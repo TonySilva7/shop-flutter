@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'package:shop/models/product.dart';
 
 class ProductList with ChangeNotifier {
@@ -15,7 +15,7 @@ class ProductList with ChangeNotifier {
   int get itemsCount => _items.length;
 
   Future<void> loadProducts() async {
-    final response = await http.get(Uri.parse('$_baseUrl/products.json'));
+    final response = await get(Uri.parse('$_baseUrl/products.json'));
     Map<String, dynamic> data = jsonDecode(response.body);
     _items.clear();
 
@@ -55,7 +55,7 @@ class ProductList with ChangeNotifier {
   }
 
   Future<void> addProduct(Product product) async {
-    final http.Response response = await http.post(
+    final Response response = await post(
       Uri.parse('$_baseUrl/products.json'),
       body: jsonEncode(
         {
@@ -88,7 +88,7 @@ class ProductList with ChangeNotifier {
     final index = _items.indexWhere((element) => element.id == product.id);
 
     if (index >= 0) {
-      await http.patch(
+      await patch(
         Uri.parse('$_baseUrl/products/${product.id}.json'),
         body: jsonEncode(
           {
@@ -105,11 +105,26 @@ class ProductList with ChangeNotifier {
     }
   }
 
-  void removeProduct(Product product) {
+  Future<void> removeProduct(Product product) async {
     final index = _items.indexWhere((element) => element.id == product.id);
+
     if (index >= 0) {
+      final Product product = _items[index];
+      _items.remove(product);
+
       _items.removeWhere((item) => item.id == product.id);
       notifyListeners();
+
+      final Response response = await delete(
+        Uri.parse('$_baseUrl/products/${product.id}'),
+      );
+
+      if (response.statusCode >= 400) {
+        _items.insert(index, product);
+        notifyListeners();
+
+        // throw Exception('Ocorreu um erro ao excluir o produto');
+      }
     }
   }
 }
