@@ -65,8 +65,8 @@ class OrderList with ChangeNotifier {
         _items.add(
           Order(
             id: orderId,
-            total: orderData['total'],
             date: DateTime.parse(orderData['date']),
+            total: orderData['total'],
             products: (orderData['products'] as List<dynamic>)
                 .map(
                   (item) => CartItem(

@@ -12,6 +12,17 @@ class OrdersPage extends StatefulWidget {
 }
 
 class _OrdersPageState extends State<OrdersPage> {
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    isLoading = true;
+    Provider.of<OrderList>(context, listen: false).loadOrders().then((_) {
+      setState(() => isLoading = false);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final OrderList orders = Provider.of(context);
@@ -20,10 +31,17 @@ class _OrdersPageState extends State<OrdersPage> {
         title: const Text('Pedidos'),
       ),
       drawer: AppDrawer(),
-      body: ListView.builder(
-        itemBuilder: (ctx, i) => OrderWidget(order: orders.items[i]),
-        itemCount: orders.itemsCount,
-      ),
+      body: isLoading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : RefreshIndicator(
+              onRefresh: () async => await orders.loadOrders(),
+              child: ListView.builder(
+                itemBuilder: (ctx, i) => OrderWidget(order: orders.items[i]),
+                itemCount: orders.itemsCount,
+              ),
+            ),
     );
   }
 }
