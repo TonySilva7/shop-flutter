@@ -39,9 +39,9 @@ class AuthPage extends StatelessWidget {
                   color: Theme.of(context).colorScheme.primary,
                   boxShadow: const [
                     BoxShadow(
-                      color: Colors.black12,
+                      color: Colors.black26,
                       blurRadius: 10,
-                      offset: Offset(0, 2),
+                      offset: Offset(0, 3),
                     ),
                   ],
                 ),

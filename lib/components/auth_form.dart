@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shop/utils/validatrors.dart';
+import 'package:shop/utils/validators.dart';
 
 enum AuthMode { signup, login }
 
@@ -10,15 +10,24 @@ class AuthForm extends StatefulWidget {
   State<AuthForm> createState() => _AuthFormState();
 }
 
-void _onSubmit() {}
-
 class _AuthFormState extends State<AuthForm> {
-  final AuthMode _authMode = AuthMode.signup;
+  AuthMode _authMode = AuthMode.login;
   final _passwordController = TextEditingController();
   final Map<String, String> _authData = {
     'email': '',
     'password': '',
   };
+
+  void _onSubmit() {}
+
+  bool _isLogin() => _authMode == AuthMode.login;
+  bool _isSignup() => _authMode == AuthMode.signup;
+
+  void _switchAuthMode() {
+    setState(() {
+      _authMode = _isLogin() ? AuthMode.signup : AuthMode.login;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,8 +39,8 @@ class _AuthFormState extends State<AuthForm> {
       ),
       child: Container(
         padding: const EdgeInsets.all(16),
-        height: _authMode == AuthMode.signup ? 290 : 220,
         width: deviceSize.width * 0.85,
+        // height: _isSignup() ? 290 : 270,
         child: Form(
           child: Column(
             children: [
@@ -48,14 +57,16 @@ class _AuthFormState extends State<AuthForm> {
                 obscureText: true,
                 validator: (value) => Validators.passwordValidator(value),
               ),
-              if (_authMode == AuthMode.signup)
+              if (_isSignup())
                 TextFormField(
                   decoration: InputDecoration(labelText: 'Confirmar Senha'),
                   keyboardType: TextInputType.text,
-                  validator: (value) => Validators.confirmPasswordValidator(
-                    value,
-                    _passwordController.text,
-                  ),
+                  validator: _isLogin()
+                      ? null
+                      : (value) => Validators.confirmPasswordValidator(
+                            value,
+                            _passwordController.text,
+                          ),
                   obscureText: true,
                 ),
               SizedBox(
@@ -73,9 +84,15 @@ class _AuthFormState extends State<AuthForm> {
                   ),
                 ),
                 child: Text(
-                  _authMode == AuthMode.login ? 'ENTRAR' : 'REGISTRAR',
+                  _isLogin() ? 'ENTRAR' : 'REGISTRAR',
                 ),
               ),
+              TextButton(
+                onPressed: _switchAuthMode,
+                child: Text(
+                  _isLogin() ? 'Criar uma nova conta' : 'Já tenho uma conta',
+                ),
+              )
             ],
           ),
         ),
