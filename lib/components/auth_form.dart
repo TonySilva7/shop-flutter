@@ -11,14 +11,29 @@ class AuthForm extends StatefulWidget {
 }
 
 class _AuthFormState extends State<AuthForm> {
+  final _formKey = GlobalKey<FormState>();
   AuthMode _authMode = AuthMode.login;
+  bool _isLoading = false;
   final _passwordController = TextEditingController();
   final Map<String, String> _authData = {
     'email': '',
     'password': '',
   };
 
-  void _onSubmit() {}
+  void _onSubmit() {
+    final isValid = _formKey.currentState?.validate() ?? false;
+    if (!isValid) {
+      return;
+    }
+    setState(() => _isLoading = true);
+    _formKey.currentState?.save();
+
+    if (_isLogin()) {
+      // Log user in
+    } else {
+      // Sign user up
+    }
+  }
 
   bool _isLogin() => _authMode == AuthMode.login;
   bool _isSignup() => _authMode == AuthMode.signup;
@@ -42,6 +57,7 @@ class _AuthFormState extends State<AuthForm> {
         width: deviceSize.width * 0.85,
         // height: _isSignup() ? 290 : 270,
         child: Form(
+          key: _formKey,
           child: Column(
             children: [
               TextFormField(
@@ -72,21 +88,23 @@ class _AuthFormState extends State<AuthForm> {
               SizedBox(
                 height: 20,
               ),
-              ElevatedButton(
-                onPressed: _onSubmit,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 40,
-                    vertical: 8,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-                child: Text(
-                  _isLogin() ? 'ENTRAR' : 'REGISTRAR',
-                ),
-              ),
+              _isLoading
+                  ? CircularProgressIndicator()
+                  : ElevatedButton(
+                      onPressed: _onSubmit,
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 40,
+                          vertical: 8,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                      child: Text(
+                        _isLogin() ? 'ENTRAR' : 'REGISTRAR',
+                      ),
+                    ),
               TextButton(
                 onPressed: _switchAuthMode,
                 child: Text(
