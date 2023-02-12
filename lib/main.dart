@@ -7,6 +7,7 @@ import 'package:shop/Pages/product_detail_page.dart';
 import 'package:shop/Pages/product_form_page.dart';
 import 'package:shop/Pages/products_overview_page.dart';
 import 'package:shop/Pages/products_page.dart';
+import 'package:shop/models/auth.dart';
 import 'package:shop/models/cart.dart';
 import 'package:shop/models/order_list.dart';
 import 'package:shop/models/product_list.dart';
@@ -26,7 +27,8 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (ctx) => ProductList()),
         ChangeNotifierProvider(create: (ctx) => Cart()),
-        ChangeNotifierProvider(create: (ctx) => OrderList())
+        ChangeNotifierProvider(create: (ctx) => OrderList()),
+        ChangeNotifierProvider(create: (ctx) => Auth()),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',

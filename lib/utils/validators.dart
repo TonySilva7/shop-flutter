@@ -4,12 +4,13 @@ class Validators {
   );
 
   static final RegExp _passwordRegExp = RegExp(
-    r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$',
+    // r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$',
+    r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$',
   );
 
   static String? emailValidator(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Email is required';
+      return 'E-mail é obrigatório';
     } else if (!_emailRegExp.hasMatch(value)) {
       return 'Por favor, informe um email válido';
     }
@@ -18,16 +19,16 @@ class Validators {
 
   static String? passwordValidator(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Password is required';
+      return 'Senha é obrigatória';
     } else if (!_passwordRegExp.hasMatch(value)) {
-      return 'Senha deve conter pelo menos 8 caracteres, uma letra e um número';
+      return 'Insira ao menos 8 caracteres. Ex. Abc123@*';
     }
     return null;
   }
 
   static String? confirmPasswordValidator(String? value, String? password) {
     if (value == null || value.isEmpty) {
-      return 'Password is required';
+      return 'Senha é obrigatória';
     } else if (value != password) {
       return 'Senhas não conferem';
     }
