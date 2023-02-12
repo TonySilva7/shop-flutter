@@ -38,17 +38,6 @@ class OrdersPage extends StatelessWidget {
           }
         },
       ),
-      // body: isLoading
-      //     ? Center(
-      //         child: CircularProgressIndicator(),
-      //       )
-      //     : RefreshIndicator(
-      //         onRefresh: () async => await orders.loadOrders(),
-      //         child: ListView.builder(
-      //           itemBuilder: (ctx, i) => OrderWidget(order: orders.items[i]),
-      //           itemCount: orders.itemsCount,
-      //         ),
-      //       ),
     );
   }
 }
