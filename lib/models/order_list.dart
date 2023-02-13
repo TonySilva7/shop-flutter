@@ -1,12 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart';
 import 'package:shop/models/cart.dart';
 import 'package:shop/models/cart_item.dart';
 import 'package:shop/models/order.dart';
-
-import '../utils/constants.dart';
 
 class OrderList with ChangeNotifier {
   final List<Order> _items = [];
@@ -23,7 +22,7 @@ class OrderList with ChangeNotifier {
     DateTime dateNow = DateTime.now();
 
     final Response response = await post(
-      Uri.parse('${Constants.ORDER_BASE_URL}.json'),
+      Uri.parse('${dotenv.env['ORDER_BASE_URL']}.json'),
       body: jsonEncode({
         'total': cart.totalAmount,
         'date': dateNow.toIso8601String(),
@@ -57,7 +56,7 @@ class OrderList with ChangeNotifier {
   Future<void> loadOrders() async {
     _items.clear();
 
-    final response = await get(Uri.parse('${Constants.ORDER_BASE_URL}.json'));
+    final response = await get(Uri.parse('${dotenv.env['ORDER_BASE_URL']}.json'));
     Map<String, dynamic> data = jsonDecode(response.body);
 
     if (data.isNotEmpty) {

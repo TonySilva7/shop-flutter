@@ -1,11 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart';
 import 'package:shop/exceptions/auth_exception.dart';
 
 class Auth with ChangeNotifier {
-  static const String _apiKey = 'AIzaSyCXBPpa2OqT2E1cY-0aS4uCTFD-zgNCrlE';
   final Map<String, dynamic> _authDataLogged = {
     'token': null,
     'email': '',
@@ -39,7 +39,7 @@ class Auth with ChangeNotifier {
   }
 
   Future<void> _authenticate(String email, String password, String urlSegment) async {
-    final url = Uri.parse('https://identitytoolkit.googleapis.com/v1/accounts:$urlSegment?key=$_apiKey');
+    final url = Uri.parse('${dotenv.env['API_URL_AUTH']}:$urlSegment?key=${dotenv.env['API_KEY']}');
     final Response response = await post(
       url,
       body: jsonEncode({
