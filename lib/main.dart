@@ -24,10 +24,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (ctx) => ProductList()),
+        ChangeNotifierProvider(create: (ctx) => Auth()),
+        // ChangeNotifierProvider(create: (ctx) => ProductList()),
+        ChangeNotifierProxyProvider<Auth, ProductList>(
+          create: (ctx) => ProductList('', []),
+          update: (ctx, auth, previous) => ProductList(auth.token ?? '', previous?.items ?? []),
+        ),
         ChangeNotifierProvider(create: (ctx) => Cart()),
         ChangeNotifierProvider(create: (ctx) => OrderList()),
-        ChangeNotifierProvider(create: (ctx) => Auth()),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
