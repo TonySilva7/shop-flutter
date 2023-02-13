@@ -6,6 +6,29 @@ import 'package:shop/exceptions/auth_exception.dart';
 
 class Auth with ChangeNotifier {
   static const String _apiKey = 'AIzaSyCXBPpa2OqT2E1cY-0aS4uCTFD-zgNCrlE';
+  final Map<String, dynamic> _authDataLogged = {
+    'token': null,
+    'email': '',
+    'uid': '',
+    'expiryDate': null,
+  };
+
+  bool get isAuth {
+    final isValid = _authDataLogged['expiryDate']?.isAfter(DateTime.now()) ?? false;
+    return _authDataLogged['token'] != null && isValid;
+  }
+
+  String? get token {
+    return isAuth ? _authDataLogged['token'] : null;
+  }
+
+  String? get email {
+    return isAuth ? _authDataLogged['email'] : null;
+  }
+
+  String? get uid {
+    return isAuth ? _authDataLogged['uid'] : null;
+  }
 
   Future<void> signup(String email, String password) async {
     return _authenticate(email, password, 'signUp');
@@ -30,6 +53,13 @@ class Auth with ChangeNotifier {
 
     if (body['error'] != null) {
       throw AuthException(key: body['error']['message']);
+    } else {
+      _authDataLogged['token'] = body['idToken'];
+      _authDataLogged['email'] = body['email'];
+      _authDataLogged['uid'] = body['localId'];
+      _authDataLogged['expiryDate'] = DateTime.now().add(Duration(seconds: int.parse(body['expiresIn'])));
+
+      notifyListeners();
     }
   }
 }
