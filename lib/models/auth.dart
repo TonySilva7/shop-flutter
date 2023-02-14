@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ class Auth with ChangeNotifier {
     'email': null,
     'userId': null,
     'expiryDate': null,
+    'logoutTimer': null,
   };
 
   bool get isAuth {
@@ -58,13 +60,32 @@ class Auth with ChangeNotifier {
       _authDataLogged['email'] = body['email'];
       _authDataLogged['userId'] = body['localId'];
       _authDataLogged['expiryDate'] = DateTime.now().add(Duration(seconds: int.parse(body['expiresIn'])));
-
+      _autoLogout();
       notifyListeners();
     }
   }
 
   void logout() {
     _authDataLogged.clear();
+    _clearLogoutTimer();
     notifyListeners();
+  }
+
+  void _clearLogoutTimer() {
+    if (_authDataLogged['logoutTimer'] != null) {
+      _authDataLogged['logoutTimer']?.cancel();
+      _authDataLogged['logoutTimer'] = null;
+    }
+  }
+
+  void _autoLogout() {
+    _clearLogoutTimer();
+
+    if (_authDataLogged['expiryDate'] != null) {
+      final timeToLogout = _authDataLogged['expiryDate']!.difference(DateTime.now()).inSeconds;
+      print('Tempo para logout: $timeToLogout segundos.');
+
+      _authDataLogged['logoutTimer'] = Timer(Duration(seconds: timeToLogout), logout);
+    }
   }
 }
