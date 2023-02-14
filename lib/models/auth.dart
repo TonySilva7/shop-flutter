@@ -8,8 +8,8 @@ import 'package:shop/exceptions/auth_exception.dart';
 class Auth with ChangeNotifier {
   final Map<String, dynamic> _authDataLogged = {
     'token': null,
-    'email': '',
-    'userId': '',
+    'email': null,
+    'userId': null,
     'expiryDate': null,
   };
 
@@ -61,5 +61,10 @@ class Auth with ChangeNotifier {
 
       notifyListeners();
     }
+  }
+
+  void logout() {
+    _authDataLogged.clear();
+    notifyListeners();
   }
 }

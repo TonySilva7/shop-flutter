@@ -10,8 +10,9 @@ import 'package:shop/models/order.dart';
 class OrderList with ChangeNotifier {
   final List<Order> _items;
   final String _token;
+  final String _userId;
 
-  OrderList([this._token = '', this._items = const []]);
+  OrderList([this._token = '', this._userId = '', this._items = const []]);
 
   List<Order> get items {
     return [..._items];
@@ -25,7 +26,7 @@ class OrderList with ChangeNotifier {
     DateTime dateNow = DateTime.now();
 
     final Response response = await post(
-      Uri.parse('${dotenv.env['ORDER_BASE_URL']}.json?auth=$_token'),
+      Uri.parse('${dotenv.env['ORDER_BASE_URL']}/$_userId.json?auth=$_token'),
       body: jsonEncode({
         'total': cart.totalAmount,
         'date': dateNow.toIso8601String(),
@@ -59,7 +60,7 @@ class OrderList with ChangeNotifier {
   Future<void> loadOrders() async {
     List<Order> listItems = [];
 
-    final response = await get(Uri.parse('${dotenv.env['ORDER_BASE_URL']}.json?auth=$_token'));
+    final response = await get(Uri.parse('${dotenv.env['ORDER_BASE_URL']}/$_userId.json?auth=$_token'));
     Map<String, dynamic> data = jsonDecode(response.body) ?? {};
 
     if (data.isNotEmpty) {
