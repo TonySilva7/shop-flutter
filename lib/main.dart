@@ -28,11 +28,14 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (ctx) => Auth()),
         ChangeNotifierProxyProvider<Auth, ProductList>(
-          create: (ctx) => ProductList('', []),
-          update: (ctx, auth, previous) => ProductList(auth.token ?? '', previous?.items ?? []),
+          create: (ctx) => ProductList(),
+          update: (ctx, auth, previous) => ProductList(auth.token ?? '', auth.userId ?? '', previous?.items ?? []),
+        ),
+        ChangeNotifierProxyProvider<Auth, OrderList>(
+          create: (ctx) => OrderList(),
+          update: (ctx, auth, previous) => OrderList(auth.token ?? '', previous?.items ?? []),
         ),
         ChangeNotifierProvider(create: (ctx) => Cart()),
-        ChangeNotifierProvider(create: (ctx) => OrderList()),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',

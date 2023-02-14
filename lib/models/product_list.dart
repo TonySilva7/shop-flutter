@@ -9,9 +9,14 @@ import 'package:shop/models/product.dart';
 
 class ProductList with ChangeNotifier {
   final List<Product> _items;
+  final String _userId;
   final String _token;
 
-  ProductList(this._token, [this._items = const []]);
+  ProductList([
+    this._token = '',
+    this._userId = '',
+    this._items = const [],
+  ]);
 
   List<Product> get items => [..._items];
   List<Product> get favoriteItems => _items.where((product) => product.isFavorite).toList();
@@ -24,7 +29,14 @@ class ProductList with ChangeNotifier {
     _items.clear();
 
     if (data.isNotEmpty) {
+      final favResponse = await get(
+        Uri.parse('${dotenv.env['USER_FAVORITE_URL']}/$_userId.json?auth=$_token'),
+      );
+
+      Map<String, dynamic> favData = jsonDecode(favResponse.body) ?? {};
+
       data.forEach((productId, productData) {
+        final isFavorite = favData[productId] ?? false;
         _items.add(
           Product(
             id: productId,
@@ -32,7 +44,8 @@ class ProductList with ChangeNotifier {
             description: productData['description'],
             price: productData['price'],
             imageUrl: productData['imageUrl'],
-            isFavorite: productData['isFavorite'],
+            isFavorite: isFavorite,
+            // isFavorite: productData['isFavorite'],
           ),
         );
       });
@@ -67,7 +80,7 @@ class ProductList with ChangeNotifier {
           'price': product.price,
           'description': product.description,
           'imageUrl': product.imageUrl,
-          'isFavorite': product.isFavorite,
+          // 'isFavorite': product.isFavorite,
         },
       ),
     );
@@ -81,7 +94,7 @@ class ProductList with ChangeNotifier {
         description: product.description,
         price: product.price,
         imageUrl: product.imageUrl,
-        isFavorite: product.isFavorite,
+        // isFavorite: product.isFavorite,
       ),
     );
 
@@ -120,7 +133,7 @@ class ProductList with ChangeNotifier {
       notifyListeners();
 
       final Response response = await delete(
-        Uri.parse('${dotenv.env['PRODUCT_BASE_URL']}/${product.id}.json'),
+        Uri.parse('${dotenv.env['PRODUCT_BASE_URL']}/${product.id}.json?auth=$_token'),
       );
 
       if (response.statusCode >= 400) {

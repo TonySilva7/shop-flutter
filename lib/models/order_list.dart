@@ -8,7 +8,10 @@ import 'package:shop/models/cart_item.dart';
 import 'package:shop/models/order.dart';
 
 class OrderList with ChangeNotifier {
-  final List<Order> _items = [];
+  final List<Order> _items;
+  final String _token;
+
+  OrderList([this._token = '', this._items = const []]);
 
   List<Order> get items {
     return [..._items];
@@ -22,7 +25,7 @@ class OrderList with ChangeNotifier {
     DateTime dateNow = DateTime.now();
 
     final Response response = await post(
-      Uri.parse('${dotenv.env['ORDER_BASE_URL']}.json'),
+      Uri.parse('${dotenv.env['ORDER_BASE_URL']}.json?auth=$_token'),
       body: jsonEncode({
         'total': cart.totalAmount,
         'date': dateNow.toIso8601String(),
@@ -54,14 +57,14 @@ class OrderList with ChangeNotifier {
   }
 
   Future<void> loadOrders() async {
-    _items.clear();
+    List<Order> listItems = [];
 
-    final response = await get(Uri.parse('${dotenv.env['ORDER_BASE_URL']}.json'));
-    Map<String, dynamic> data = jsonDecode(response.body);
+    final response = await get(Uri.parse('${dotenv.env['ORDER_BASE_URL']}.json?auth=$_token'));
+    Map<String, dynamic> data = jsonDecode(response.body) ?? {};
 
     if (data.isNotEmpty) {
       data.forEach((orderId, orderData) {
-        _items.add(
+        listItems.add(
           Order(
             id: orderId,
             date: DateTime.parse(orderData['date']),
@@ -80,6 +83,9 @@ class OrderList with ChangeNotifier {
           ),
         );
       });
+      _items.clear();
+      _items.addAll(listItems);
+
       notifyListeners();
     }
   }

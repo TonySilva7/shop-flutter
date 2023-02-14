@@ -9,7 +9,7 @@ class Auth with ChangeNotifier {
   final Map<String, dynamic> _authDataLogged = {
     'token': null,
     'email': '',
-    'uid': '',
+    'userId': '',
     'expiryDate': null,
   };
 
@@ -26,8 +26,8 @@ class Auth with ChangeNotifier {
     return isAuth ? _authDataLogged['email'] : null;
   }
 
-  String? get uid {
-    return isAuth ? _authDataLogged['uid'] : null;
+  String? get userId {
+    return isAuth ? _authDataLogged['userId'] : null;
   }
 
   Future<void> signup(String email, String password) async {
@@ -56,7 +56,7 @@ class Auth with ChangeNotifier {
     } else {
       _authDataLogged['token'] = body['idToken'];
       _authDataLogged['email'] = body['email'];
-      _authDataLogged['uid'] = body['localId'];
+      _authDataLogged['userId'] = body['localId'];
       _authDataLogged['expiryDate'] = DateTime.now().add(Duration(seconds: int.parse(body['expiresIn'])));
 
       notifyListeners();
