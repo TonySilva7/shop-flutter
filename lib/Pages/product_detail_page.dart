@@ -15,12 +15,26 @@ class ProductDetailPage extends StatelessWidget {
             pinned: true,
             flexibleSpace: FlexibleSpaceBar(
               title: Text(product.name),
-              background: Hero(
-                tag: product.id,
-                child: Image.network(
-                  product.imageUrl,
-                  fit: BoxFit.cover,
-                ),
+              background: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Hero(
+                    tag: product.id,
+                    child: Image.network(
+                      product.imageUrl,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  const DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment(0, 0.8),
+                        end: Alignment(0, 0),
+                        colors: [Color(0x60000000), Color(0x00000000)],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -30,7 +44,11 @@ class ProductDetailPage extends StatelessWidget {
                 SizedBox(height: 10),
                 Text(
                   'R\$ ${product.price}',
-                  style: TextStyle(color: Colors.grey, fontSize: 22, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    color: Colors.purple,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: 10),
@@ -44,8 +62,6 @@ class ProductDetailPage extends StatelessWidget {
                     style: TextStyle(fontSize: 18),
                   ),
                 ),
-                Container(height: 800),
-                Text('Fim da página', textAlign: TextAlign.center, style: TextStyle(fontSize: 18)),
               ],
             ),
           )
