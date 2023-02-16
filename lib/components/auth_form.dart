@@ -24,7 +24,6 @@ class _AuthFormState extends State<AuthForm> with SingleTickerProviderStateMixin
     'password': '',
   };
   AnimationController? _controller;
-  Animation<Size>? _heightAnimation;
 
   @override
   void initState() {
@@ -32,16 +31,6 @@ class _AuthFormState extends State<AuthForm> with SingleTickerProviderStateMixin
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
-    );
-
-    _heightAnimation = Tween<Size>(
-      begin: const Size(double.infinity, 310),
-      end: const Size(double.infinity, 400),
-    ).animate(
-      CurvedAnimation(
-        parent: _controller!,
-        curve: Curves.linear,
-      ),
     );
   }
 
@@ -114,15 +103,12 @@ class _AuthFormState extends State<AuthForm> with SingleTickerProviderStateMixin
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
-      child: AnimatedBuilder(
-        animation: _heightAnimation!,
-        builder: (ctx, childForm) => Container(
-          padding: const EdgeInsets.all(16),
-          width: deviceSize.width * 0.85,
-          // height: _isSignup() ? 290 : 270,
-          height: _heightAnimation?.value.height, //?? (_isSignup() ? 310 : 400),
-          child: childForm,
-        ),
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        padding: const EdgeInsets.all(16),
+        width: deviceSize.width * 0.85,
+        height: _isLogin() ? 310 : 400,
         child: Form(
           key: _formKey,
           child: Column(
