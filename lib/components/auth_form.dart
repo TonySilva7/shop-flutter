@@ -43,8 +43,6 @@ class _AuthFormState extends State<AuthForm> with SingleTickerProviderStateMixin
         curve: Curves.linear,
       ),
     );
-
-    // _heightAnimation?.addListener(() => setState(() {}));
   }
 
   @override
