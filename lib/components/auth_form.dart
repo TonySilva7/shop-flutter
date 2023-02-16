@@ -24,6 +24,8 @@ class _AuthFormState extends State<AuthForm> with SingleTickerProviderStateMixin
     'password': '',
   };
   AnimationController? _controller;
+  Animation<double>? _opacityAnimation;
+  Animation<Offset>? _slideAnimation;
 
   @override
   void initState() {
@@ -31,6 +33,26 @@ class _AuthFormState extends State<AuthForm> with SingleTickerProviderStateMixin
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
+    );
+
+    _opacityAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller!,
+        curve: Curves.easeIn,
+      ),
+    );
+
+    _slideAnimation = Tween<Offset>(
+      begin: Offset(0, -1.1),
+      end: Offset(0, 0),
+    ).animate(
+      CurvedAnimation(
+        parent: _controller!,
+        curve: Curves.easeIn,
+      ),
     );
   }
 
@@ -81,7 +103,6 @@ class _AuthFormState extends State<AuthForm> with SingleTickerProviderStateMixin
   }
 
   bool _isLogin() => _authMode == AuthMode.login;
-  bool _isSignup() => _authMode == AuthMode.signup;
 
   void _switchAuthMode() {
     setState(() {
@@ -126,18 +147,31 @@ class _AuthFormState extends State<AuthForm> with SingleTickerProviderStateMixin
                 obscureText: true,
                 validator: (value) => Validators.passwordValidator(value),
               ),
-              if (_isSignup())
-                TextFormField(
-                  decoration: InputDecoration(labelText: 'Confirmar Senha'),
-                  keyboardType: TextInputType.text,
-                  validator: _isLogin()
-                      ? null
-                      : (value) => Validators.confirmPasswordValidator(
-                            value,
-                            _passwordController.text,
-                          ),
-                  obscureText: true,
+              AnimatedContainer(
+                constraints: BoxConstraints(
+                  minHeight: _isLogin() ? 0 : 60,
+                  maxHeight: _isLogin() ? 0 : 120,
                 ),
+                duration: Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+                child: FadeTransition(
+                  opacity: _opacityAnimation!,
+                  child: SlideTransition(
+                    position: _slideAnimation!,
+                    child: TextFormField(
+                      decoration: InputDecoration(labelText: 'Confirmar Senha'),
+                      keyboardType: TextInputType.text,
+                      validator: _isLogin()
+                          ? null
+                          : (value) => Validators.confirmPasswordValidator(
+                                value,
+                                _passwordController.text,
+                              ),
+                      obscureText: true,
+                    ),
+                  ),
+                ),
+              ),
               SizedBox(
                 height: 20,
               ),
