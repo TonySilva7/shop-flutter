@@ -12,6 +12,7 @@ import 'package:shop/models/cart.dart';
 import 'package:shop/models/order_list.dart';
 import 'package:shop/models/product_list.dart';
 import 'package:shop/routes/app_routes.dart';
+import 'package:shop/routes/custom_route.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");
@@ -48,6 +49,12 @@ class MyApp extends StatelessWidget {
             secondary: Colors.deepOrange,
           ),
           canvasColor: Color.fromARGB(255, 253, 236, 255),
+          pageTransitionsTheme: PageTransitionsTheme(
+            builders: {
+              TargetPlatform.android: CustomPageTransitionBuilder(),
+              TargetPlatform.iOS: CustomPageTransitionBuilder(),
+            },
+          ),
         ),
         debugShowCheckedModeBanner: false,
         routes: {
